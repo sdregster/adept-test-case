@@ -3,10 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const fetchData = createAsyncThunk(
     'companies/fetchCompaniesData',
-    async (page=1, { rejectWithValue }) => {
+    async (page=1, { rejectWithValue, dispatch }) => {
         try {
             const response = await fetch(`http://localhost:3004/companies?_embed=employees&_limit=12&_page=${page}`);
             const data = await response.json();
+            const headers = [...response.headers.entries()]
+            dispatch(setPageLimit(headers))
             return data
         } catch (error) {
             return rejectWithValue(error.message)
@@ -104,7 +106,8 @@ const companySlice = createSlice({
         status: null,
         error: null,
         selectedId: '',
-        isCellEditing: false
+        isCellEditing: false,
+        pageLimit: 0
     },
     reducers: {
         addCompanyLocal(state, action) {
@@ -151,6 +154,15 @@ const companySlice = createSlice({
         },
         setCellEditing(state, action) {
             state.isCellEditing = action.payload
+        },
+        setPageLimit(state, action) {
+            const headers = action.payload
+            for (let index = 0; index < headers.length; index++) {
+                const element = headers[index];
+                if (element[0] === 'x-total-count') {
+                    state.pageLimit = Math.ceil(element[1] / 12)
+                }     
+            }
         }
     },
     extraReducers: {
@@ -169,6 +181,6 @@ const companySlice = createSlice({
     }
 })
 
-const { addCompanyLocal, removeCompanyLocal, editCompanyLocal} = companySlice.actions
+const { addCompanyLocal, removeCompanyLocal, editCompanyLocal, setPageLimit} = companySlice.actions
 export const {setSelectedId, setCellEditing, addNewEmployeeLocal, removeEmployeeLocal, editEmployeeLocal} = companySlice.actions
 export default companySlice.reducer

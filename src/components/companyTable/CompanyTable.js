@@ -11,6 +11,8 @@ const CompanyTable = () => {
     const dispatch = useDispatch();
     const columns = useMemo(() => COLUMNS, []);
     const data = useSelector(state => state.company.companies);
+    const pageLimit = useSelector(state => state.company.pageLimit);
+
     useEffect(() => {
         dispatch(fetchData());
     }, [dispatch]);
@@ -84,8 +86,10 @@ const CompanyTable = () => {
     // Подгрузка данных на скролл
     const [page, setPage] = useState(2);
     const fetchMoreData = () => {
-        setPage(page + 1)
-        dispatch(fetchData(page));
+        if (page <= pageLimit) {
+            setPage(page + 1)
+            dispatch(fetchData(page));
+        }  
     }
 
     const listInnerRef = useRef();
