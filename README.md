@@ -1,3 +1,13 @@
+### `About`
+JS lib - React\
+State managment - Redux Toolkit\
+CSS framework - Tailwind\
+\
+CRUD operations on 2 tables (companies and employees) based on async requests.\
+Pagination, dynamic data uploading on scroll, editable cells.
+
+
+
 ### `Initialization`
 
 1) npm i
